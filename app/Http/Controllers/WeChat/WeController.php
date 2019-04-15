@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\UserModel;
 use Illuminate\Support\Facades\Redis;
-
+use GuzzleHttp;
 class WeController extends Controller
 {
     public function valid(){
@@ -14,6 +14,7 @@ class WeController extends Controller
     }
 
     public function wxPostEvent(){
+
         //接受微信服务器推送
         $content = file_get_contents("php://input");
 
@@ -175,7 +176,7 @@ class WeController extends Controller
             ),
         );
         $strjson = json_encode($arr,JSON_UNESCAPED_UNICODE);
-        $clinet = new Client();
+        $clinet = new GuzzleHttp\Client();
         $response = $clinet ->request("POST",$url,[
             'body'=>$strjson
         ]);
