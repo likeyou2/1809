@@ -24,4 +24,4 @@ Route::post('valid','WeChat\WeController@wxPostEvent');
 Route::get('/weixin/access_token','WeChat\WeController@getAccessToken');
 
 //微信自定义菜单
-Route::post("menu","WeChat\WeController@CustomMenu");
+Route::get("menu","WeChat\WeController@CustomMenu");
