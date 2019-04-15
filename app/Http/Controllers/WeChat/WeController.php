@@ -108,80 +108,85 @@ class WeController extends Controller
     }
 
 
-    public function menu(){
-        $accessToken = $this->getAccessToken();
-        $url="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$accessToken";
-        $arr = array(
-            "button"=> array(
-                array(
-                    "name"=>"发送位置",
-                    "type"=> "location_select",
-                    "key"=> "rselfmenu_2_0"
-                ),
-                array(
-                    'name'=>"发图",
-                    "sub_button"=>array(
-                        array(
-                            "type"=>"pic_sysphoto",
-                            "name"=>"系统拍照发图",
-                            "key"=>"rselfmenu_1_0",
-                            "sub_button"=>[ ]
-                        ),
-                        array(
-                            "type"=>"pic_photo_or_album",
-                            "name"=>"拍照或者相册发图",
-                            "key"=>"rselfmenu_1_1",
-                            "sub_button"=>[ ]
-                        ),
-                        array(
-                            "type"=>"pic_weixin",
-                            "name"=>"微信相册发图",
-                            "key"=>"rselfmenu_1_2",
-                            "sub_button"=>[ ]
-                        ),
-                    ),
-
-                ),
-                array(
-                    'name'=>"玩具",
-                    "type"=>"click",
-                    "key"=>"bbb",
-                    "sub_button"=>array(
-                        array(
-                            "type"=>"click",
-                            "name"=>"店铺",
-                            "key"=>"iii"
-                        ),
-                        array(
-                            "type"=>"view",
-                            "name"=>"百度",
-                            "url"=>"https://www.baidu.com/"
-                        ),
-
-                    ),
-                ),
-                array(
-                    'name'=>"推广",
-                    "type"=>"click",
-                    "key"=>"bbb",
-                    "sub_button"=>array(
-                        array(
-                            "type"=>"scancode_waitmsg",
-                            "name"=>"微信扫码",
-                            "key"=>"iii"
-                        ),
-                    ),
-
-                ),
-            ),
-        );
-        $strjson = json_encode($arr,JSON_UNESCAPED_UNICODE);
-        $clinet = new GuzzleHttp\Client();
-        $response = $clinet ->request("POST",$url,[
-            'body'=>$strjson
+    /**
+     * 创建自定义菜单
+     */
+    public function CustomMenu(){
+        $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token='.$this->getAccessToken();
+        $client = new GuzzleHttp\Client(['base_uri' => $url]);
+        $data = [
+            "button"    => [
+                [
+                    "name" => "相册拍照",
+                    "sub_button" => [
+                        [
+                            "type"  => "pic_sysphoto",      // view类型 跳转指定 URL
+                            "name"  => "系统拍照发图",
+                            "key"   => "rselfmenu_1_0",
+                            "sub_button"=> [ ]
+                        ],
+                        [
+                            "type" =>  "pic_photo_or_album",
+                            "name" => "拍照或者相册发图",
+                            "key" => "rselfmenu_1_1",
+                            "sub_button" => [ ]
+                        ],
+                        [
+                            "type" => "pic_weixin",
+                            "name" => "微信相册发图",
+                            "key" => "rselfmenu_1_2",
+                            "sub_button" => [ ]
+                        ]
+                    ]
+                ],
+                [
+                    "name" => "点击跳转",
+                    "sub_button" => [
+                        [
+                            "name" => "发送位置",
+                            "type" => "location_select",
+                            "key" => "rselfmenu_2_0"
+                        ],
+                        [
+                            "name" => "哔哩哔哩",
+                            'type' => "view",
+                            "url" => "https://www.bilibili.com/"
+                        ]
+                    ]
+                ],
+                [
+                    "name" => "扫码功能",
+                    "sub_button" => [
+                        [
+                            "name" => "扫码带提示",
+                            "type" => "scancode_waitmsg",
+                            "key" => "rselfmenu_0_0",
+                            "sub_button"=>[
+                                'text'=>"text"
+                            ]
+                        ],
+                        [
+                            "name" => "扫码推事件",
+                            "type" => "scancode_push",
+                            "key" => "rselfmenu_0_1",
+                            "sub_button"=>[]
+                        ],
+                    ]
+                ]
+            ]
+        ];
+        $r = $client->request('POST', $url, [
+            'body' => json_encode($data,JSON_UNESCAPED_UNICODE)
         ]);
-        $res_str = $response->getBody();
-        echo $res_str;
+        // 3 解析微信接口返回信息
+        $response_arr = json_decode($r->getBody(),true);
+        if($response_arr['errcode'] == 0){
+            echo "菜单创建成功";
+        }else{
+            echo "菜单创建失败，请重试";echo '</br>';
+            echo $response_arr['errmsg'];
+        }
     }
+
 
 }
