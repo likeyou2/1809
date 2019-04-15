@@ -14,3 +14,14 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+//微信配置
+Route::get('valid','WeChat\WeController@valid');
+
+Route::post('valid','WeChat\WeController@wxPostEvent');
+
+//access_token
+Route::get('/weixin/access_token','WeChat\WeController@getAccessToken');
+
+//微信自定义菜单
+Route::get("menu","WeChat\WeController@menu");
